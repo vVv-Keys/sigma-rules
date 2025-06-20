@@ -1,0 +1,21 @@
+title: DNS Tunneling via Suspicious TXT Queries
+id: f9a8b93c-keys-dns-tunnel
+description: Detects base64-like encoded DNS TXT queries used in DNS tunneling and C2 beaconing
+status: experimental
+author: (@vVv-Keys)
+date: 2025/06/19
+logsource:
+  product: windows
+  category: dns_query
+detection:
+  suspicious_txt:
+    QueryName|re: '([A-Za-z0-9+/=]{20,}\.)+'
+    QueryType: 'TXT'
+  condition: suspicious_txt
+falsepositives:
+  - Misconfigured internal DNS TXT record checks
+level: high
+tags:
+  - attack.command_and_control
+  - attack.t1071.004
+  - sigma-contrib
