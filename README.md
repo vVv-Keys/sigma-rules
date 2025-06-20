@@ -1,2 +1,0 @@
-# sigma-rules
-sigma-rules
