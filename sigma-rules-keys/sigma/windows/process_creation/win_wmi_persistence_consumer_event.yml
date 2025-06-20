@@ -1,0 +1,23 @@
+title: WMI Persistence via Event Consumers
+id: 2035c25f-keys-wmi-persist
+description: Detects WMI event subscription persistence using permanent event consumers and filters
+status: experimental
+author: (@vVv-Keys)
+date: 2025/06/19
+logsource:
+  product: windows
+  category: wmi_event
+detection:
+  selection:
+    Namespace|contains: 'root\\subscription'
+    EventConsumer|contains:
+      - 'CommandLineEventConsumer'
+      - 'ActiveScriptEventConsumer'
+  condition: selection
+falsepositives:
+  - Internal IT automation
+level: high
+tags:
+  - attack.persistence
+  - attack.t1546.003
+  - sigma-contrib
