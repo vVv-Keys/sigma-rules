@@ -1,0 +1,18 @@
+title: Suspicious AMSI Bypass via .NET
+id: b5f76d26-c5d1-11ed-afa1-0242ac120002
+description: Detects AMSI bypass using .NET reflection
+status: experimental
+author: Keys
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        CommandLine|contains:
+            - 'System.Management.Automation.AmsiUtils'
+            - 'amsiInitFailed'
+    condition: selection
+level: high
+tags:
+    - attack.defense_evasion
+    - attack.t1562.001

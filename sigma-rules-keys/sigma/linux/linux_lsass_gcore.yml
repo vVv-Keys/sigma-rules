@@ -1,0 +1,21 @@
+title: Linux LSASS Dump via gcore
+id: c4e2dc0a-c5d2-11ed-afa1-0242ac120002
+description: Detects use of gcore or gdb to dump LSASS-equivalent on Linux
+status: test
+author: Keys
+logsource:
+    product: linux
+    category: process_creation
+detection:
+    selection:
+        Image: 
+            - '/usr/bin/gcore'
+            - '/usr/bin/gdb'
+        CommandLine|contains: 
+            - 'sshd'
+            - 'login'
+    condition: selection
+level: medium
+tags:
+    - attack.credential_access
+    - attack.t1003
