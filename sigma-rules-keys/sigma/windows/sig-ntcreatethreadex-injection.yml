@@ -1,0 +1,1 @@
+Detects shellcode injection via NtCreateThreadEx.
