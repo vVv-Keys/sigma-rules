@@ -1,0 +1,1 @@
+[DllImport('kernel32.dll')] public static extern IntPtr VirtualAlloc(...)

