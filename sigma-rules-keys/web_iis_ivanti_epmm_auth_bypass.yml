@@ -1,0 +1,37 @@
+---
+title: Potential Ivanti EPMM Authentication Bypass Access Patterns
+id: d0b21a2f-2b1d-4a0c-9497-9be19f8b2dd4
+status: experimental
+description: Detects suspicious access to EPMM endpoints associated with recent authentication bypass techniques.
+author: KeysGuard (Keys)
+date: 2025/10/02
+references:
+  - https://attack.mitre.org/techniques/T1190/
+  - https://attack.mitre.org/tactics/TA0001/
+logsource:
+  category: webserver
+detection:
+  paths_iis:
+    cs-uri-stem|contains:
+      - "/mifs/aad/device/callback"
+      - "/mifs/user/api/v2/"
+  methods:
+    cs-method:
+      - POST
+      - GET
+  generic_paths:
+    url|contains:
+      - "/mifs/aad/device/callback"
+      - "/mifs/user/api/v2/"
+  selection1:
+    cs-uri-stem|contains: *paths_iis.cs-uri-stem|contains
+    cs-method: *methods.cs-method
+  selection2:
+    url|contains: *generic_paths.url|contains
+  condition: selection1 or selection2
+falsepositives:
+  - Legitimate EPMM traffic; validate source IP reputation, auth context, and timing against patch status.
+level: high
+tags:
+  - attack.initial-access
+  - attack.t1190

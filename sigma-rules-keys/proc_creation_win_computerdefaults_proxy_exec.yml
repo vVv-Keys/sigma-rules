@@ -1,0 +1,37 @@
+---
+title: ComputerDefaults Spawning Suspicious Child Process (Possible UAC Bypass)
+id: 3d4f1a67-4f0f-4c4b-9f64-0d7f8e2c8f5b
+status: experimental
+description: Detects computerdefaults.exe spawning script interpreters or LOLBins often used in UAC bypass chains.
+author: KeysGuard (Keys)
+date: 2025/10/02
+references:
+  - https://attack.mitre.org/techniques/T1548/002/
+  - https://attack.mitre.org/techniques/T1218/
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  parent:
+    ParentImage|endswith:
+      - \computerdefaults.exe
+      - \ComputerDefaults.exe
+  child:
+    Image|endswith:
+      - \cmd.exe
+      - \powershell.exe
+      - \mshta.exe
+      - \wscript.exe
+      - \reg.exe
+  selection:
+    ParentImage|endswith: *parent.ParentImage|endswith
+    Image|endswith: *child.Image|endswith
+  condition: selection
+falsepositives:
+  - Very rare in benign environments. Validate signed paths and user action.
+level: high
+tags:
+  - attack.execution
+  - attack.defense-evasion
+  - attack.t1548.002
+  - attack.t1218

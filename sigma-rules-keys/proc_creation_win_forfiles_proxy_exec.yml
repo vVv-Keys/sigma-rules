@@ -1,0 +1,44 @@
+---
+title: ForFiles Proxy Execution Spawning Script Interpreters
+id: 7f247e1d-1d35-4a12-9d8d-27d0ecdb61f0
+status: experimental
+description: Detects forfiles.exe abuse to proxy execution of cmd/powershell/mshta/wscript for stealthy script launch.
+author: KeysGuard (Keys)
+date: 2025/10/02
+references:
+  - https://attack.mitre.org/techniques/T1218/
+  - https://attack.mitre.org/techniques/T1059/001/
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  parent_forfiles:
+    ParentImage|endswith:
+      - \forfiles.exe
+      - \ForFiles.exe
+  child_interpreters:
+    Image|endswith:
+      - \cmd.exe
+      - \powershell.exe
+      - \mshta.exe
+      - \wscript.exe
+      - \cscript.exe
+  cmdline_hints:
+    CommandLine|contains:
+      - "/c"
+      - "cmd /c"
+      - "powershell -"
+      - "mshta "
+  selection:
+    ParentImage|endswith: *parent_forfiles.ParentImage|endswith
+    Image|endswith: *child_interpreters.Image|endswith
+  condition: selection and cmdline_hints
+falsepositives:
+  - Administrative scripts leveraging forfiles for maintenance. Validate scheduling context and script path.
+level: medium
+tags:
+  - attack.execution
+  - attack.defense-evasion
+  - attack.t1218
+  - attack.t1059.001
+  - attack.t1059.003

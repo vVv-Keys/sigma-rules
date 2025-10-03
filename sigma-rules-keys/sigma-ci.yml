@@ -1,0 +1,37 @@
+name: Sigma CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install validators
+        run: |
+          pip install --upgrade pip
+          pip install sigma-cli yamllint
+
+      - name: Lint YAML
+        run: |
+          yamllint -d "{extends: default, rules: {line-length: disable}}" .
+
+      - name: Validate Sigma (personal repo layout)
+        if: ${{ always() }}
+        run: |
+          sigma validate --fail-on=warning || true
+          # Validate specific folders if present
+          for d in sigma-rules-keys rules rules-emerging-threats; do
+            if [ -d "$d" ]; then
+              sigma validate -r "$d"
+            fi
+          done

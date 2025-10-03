@@ -1,0 +1,67 @@
+---
+title: PowerShell AMSI Bypass Keywords in Script or Command Line
+id: 1b9b56ab-0a44-4f7f-8f66-3e3b4c33b7a0
+status: experimental
+description: Detects common AMSI bypass primitives in PowerShell (AmsiUtils and amsiInitFailed tricks), with process creation fallback.
+author: KeysGuard (Keys)
+date: 2025/10/02
+references:
+  - https://attack.mitre.org/techniques/T1562/001/
+  - https://attack.mitre.org/techniques/T1059/001/
+logsource:
+  product: windows
+  category: powershell
+detection:
+  script_indicators:
+    Message|contains:
+      - "AmsiUtils"
+      - "amsiInitFailed"
+      - "System.Management.Automation.AmsiUtils"
+      - "Reflection.Assembly"
+  condition: script_indicators
+falsepositives:
+  - Security testing and red team exercises.
+level: high
+tags:
+  - attack.defense-evasion
+  - attack.t1562.001
+  - attack.t1059.001
+fields:
+  - Computer
+  - User
+  - Message
+---
+# Fallback (process_creation) for environments without 4104
+title: PowerShell AMSI Bypass Keywords on Command Line (Fallback)
+id: 9b44738e-1d1c-4c67-b2d3-f7f8d0a6b912
+status: experimental
+description: Process creation fallback for AMSI bypass primitives on the command line.
+author: KeysGuard (Keys)
+date: 2025/10/02
+references:
+  - https://attack.mitre.org/techniques/T1562/001/
+  - https://attack.mitre.org/techniques/T1059/001/
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  proc_indicators:
+    CommandLine|contains:
+      - "AmsiUtils"
+      - "amsiInitFailed"
+      - "System.Management.Automation.AmsiUtils"
+      - "Reflection.Assembly"
+  image:
+    Image|endswith:
+      - \powershell.exe
+      - \pwsh.exe
+  selection:
+    Image|endswith: *image.Image|endswith
+  condition: selection and proc_indicators
+falsepositives:
+  - Security testing and red team exercises.
+level: high
+tags:
+  - attack.defense-evasion
+  - attack.t1562.001
+  - attack.t1059.001

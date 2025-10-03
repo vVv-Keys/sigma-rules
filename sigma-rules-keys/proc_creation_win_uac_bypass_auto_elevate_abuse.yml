@@ -1,0 +1,53 @@
+---
+title: Potential UAC Bypass via Auto-Elevating Binaries (AppInfo Abuse)
+id: 8f6f0c9d-6a8d-45f5-8b19-0e67e7a7d1b2
+status: experimental
+description: Detects auto-elevating Windows binaries (fodhelper, computerdefaults, sdclt, eventvwr, etc.) spawning script interpreters or LOLBins indicative of UAC bypass via AppInfo.
+author: KeysGuard (Keys)
+date: 2025/10/02
+references:
+  - https://attack.mitre.org/techniques/T1548/002/
+  - https://attack.mitre.org/techniques/T1218/
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  parent_candidates:
+    ParentImage|endswith:
+      - \fodhelper.exe
+      - \computerdefaults.exe
+      - \sdclt.exe
+      - \eventvwr.exe
+      - \CompMgmtLauncher.exe
+      - \slui.exe
+      - \wsreset.exe
+  child_suspicious:
+    Image|endswith:
+      - \cmd.exe
+      - \powershell.exe
+      - \wscript.exe
+      - \cscript.exe
+      - \mshta.exe
+      - \reg.exe
+      - \rundll32.exe
+      - \regsvr32.exe
+  cmd_indicators:
+    CommandLine|contains:
+      - "DelegateExecute"
+      - "Software\\Classes\\ms-settings\\Shell\\Open\\command"
+      - "/c start "
+      - "-WindowStyle Hidden"
+  selection:
+    ParentImage|endswith: *parent_candidates.ParentImage|endswith
+    Image|endswith: *child_suspicious.Image|endswith
+  condition: selection and cmd_indicators
+falsepositives:
+  - Rare but legitimate control panel invocations or OEM tooling; verify user intent and signed binaries.
+level: high
+tags:
+  - attack.execution
+  - attack.defense-evasion
+  - attack.t1548.002
+  - attack.t1218
+  - attack.t1059.001
+  - attack.t1059.003

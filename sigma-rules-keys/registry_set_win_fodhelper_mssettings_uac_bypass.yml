@@ -1,0 +1,35 @@
+---
+title: Registry Modification for Fodhelper/ms-settings UAC Bypass
+id: 6c5e2d8c-1f6a-4b43-9b1f-8d6e1c1a2a9f
+status: experimental
+description: Detects creation/modification of ms-settings shell open command and DelegateExecute keys commonly used to prepare UAC bypass chains.
+author: KeysGuard (Keys)
+date: 2025/10/02
+references:
+  - https://attack.mitre.org/techniques/T1112/
+  - https://attack.mitre.org/techniques/T1548/002/
+logsource:
+  product: windows
+  category: registry_set
+detection:
+  targetobject:
+    TargetObject|contains:
+      - "\\Software\\Classes\\ms-settings\\Shell\\Open\\command"
+      - "\\Software\\Classes\\ms-settings\\Shell\\Open\\command\\DelegateExecute"
+  suspicious_values:
+    Details|contains:
+      - "powershell"
+      - "cmd.exe"
+      - "mshta"
+      - "rundll32"
+  selection:
+    TargetObject|contains: *targetobject.TargetObject|contains
+  condition: selection and suspicious_values
+falsepositives:
+  - Rare admin testing or EDR simulations.
+level: high
+tags:
+  - attack.defense-evasion
+  - attack.persistence
+  - attack.t1112
+  - attack.t1548.002
