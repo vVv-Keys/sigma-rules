@@ -1,0 +1,18 @@
+title: Detect LockBit 5.0 DLL Reflection / ETW Tampering
+id: KGNightOwl‑20251003‑SigmaLockBit5
+description: Flag process behaviors consistent with LockBit 5.0: reflective loading, ETW suppression, process injection
+author: KeysGuard Night Owl
+date: 2025‑10‑03
+status: high
+logsource:
+  product: endpoint, process_monitor
+  service: process, dll, event
+detection:
+  selection:
+    Process|uses_DLL_reflection : true
+    Process|modifies_ETW_or_disables : true
+    Process|injects_into_system_process : true
+    Process|spawns child_processes unusual_count : true
+  condition: (selection[0] OR selection[1] OR selection[2]) AND selection[3]
+level: high
+tags: [ransomware, evasive_behavior]

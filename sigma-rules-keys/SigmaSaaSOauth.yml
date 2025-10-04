@@ -1,0 +1,17 @@
+title: Detect SaaS OAuth Token Misuse & Account Pivoting
+id: KGNightOwl‑20251003‑SigmaSaaSOauth
+description: Identify abnormal use or exchange of OAuth tokens in SaaS environments
+author: KeysGuard Night Owl
+date: 2025‑10‑03
+status: high
+logsource:
+  product: cloud, identity
+  service: oauth_log, login
+detection:
+  selection:
+    OAuth|token_exchange or token_refresh from new IP or region : true
+    Account|login from device / region inconsistent with baseline : true
+    Activity|data_export or mass read shortly after token exchange : true
+  condition: selection[0] AND selection[1] AND selection[2]
+level: high
+tags: [cloud, identity, threat_detection]

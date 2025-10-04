@@ -1,0 +1,17 @@
+title: Detect Industrial / OT Unexpected Encryption Events
+id: KGNightOwl‑20251003‑SigmaInfraEncrypt
+description: Identify unusual file encryption within SCADA / OT / infrastructure zones
+author: KeysGuard Night Owl
+date: 2025‑10‑03
+status: high
+logsource:
+  product: network, file, process
+  service: file_monitor, i/o
+detection:
+  selection:
+    FileWrite|to OT critical directories and extension changed : true
+    Process|spawned encryption routines in OT context : true
+    Volume|I/O spike or high write volume detected : true
+  condition: selection[0] AND (selection[1] OR selection[2])
+level: high
+tags: [critical_infra, ransomware, OT_security]

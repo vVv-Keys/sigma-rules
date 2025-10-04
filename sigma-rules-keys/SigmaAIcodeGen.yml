@@ -1,0 +1,17 @@
+title: Detect AI‑Driven Code Generation in Environment
+id: KGNightOwl‑20251003‑SigmaAIcodeGen
+description: Flag processes that unwrap or synthesize code at runtime (indicative of LLM misuse)
+author: KeysGuard Night Owl
+date: 2025‑10‑03
+status: high
+logsource:
+  product: endpoint, process_monitor
+  service: process, file
+detection:
+  selection:
+    Process|command_line matches_regex: “.*openai|.*gpt|.*llm.*exec.*” : true
+    FileWrite|filename endswith: “.tmp” OR “.bin” : true
+    ChildProcess|new_exec from ephemeral file : true
+  condition: all(selection)
+level: high
+tags: [ai_threats, dynamic_malware, anomaly]
